@@ -13,6 +13,7 @@ app.disable("x-powered-by");
 app.set("trust proxy", true);
 app.use(express.json());
 app.use((req, res, next) => {
+  console.log("aaa");
   var allowed = false;
   const ips = require("./configs/allowed_ip.json");
   for (var i in ips) {
@@ -20,7 +21,9 @@ app.use((req, res, next) => {
       allowed = true;
     }
   }
+  console.log("aaa1");
   if (!allowed) {
+    console.log("aaa2232");
     console.warn("No allowed IP tryed access: " + req.ip);
     return res.status(405).send(`<style>body {
         font-family: sans-serif;
@@ -29,6 +32,7 @@ app.use((req, res, next) => {
         background-color: rgb(32, 32, 32);
       }</style> <h1>This access has been declined.</h1><p>for some reason this request has been declined :<</p><p>we sorry man!!</p>`);
   } else {
+    console.log("aaa6535262574647436");
     next();
   }
 });
