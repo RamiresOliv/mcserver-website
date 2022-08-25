@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>logs</title>
+  </head>
+  <style>
+    body {
+      font-family: sans-serif;
+      color: rgb(184, 184, 184);
+      text-align: center;
+      background-color: rgb(32, 32, 32);
+    }
+    a {
+      color: rgba(72, 130, 255, 0.26);
+    }
+    footer {
+      margin-top: 490px;
+      padding: 40px 0;
+    }
+
+    #MC_Server_Url {
+      color: rgba(102, 0, 218, 0.733);
+    }
+  </style>
+  <script>
+    window.onload = () => {
+      setTimeout(() => {
+        fetch("/listener/printer/get_public_url", {
+          method: "GET",
+        })
+          .then((result) => result.json())
+          .then((data) => {
+            const elem = document.getElementById("MC_Server_Url");
+            if (!data.success) {
+              elem.textContent = "Server URL no found.";
+            } else {
+              elem.textContent = data.message.split("://")[1];
+            }
+          });
+      }, 100);
+      setInterval(() => {
+        fetch("/listener/printer/get_public_url", {
+          method: "GET",
+        })
+          .then((result) => result.json())
+          .then((data) => {
+            const elem = document.getElementById("MC_Server_Url");
+            elem.textContent = "MC Server URL: " + data.message.split("://")[1];
+          });
+      }, 5000);
+    };
+  </script>
+  <body>
+    <h1>Minecraft server :D</h1>
+    <p id="MC_Server_Url">..url..</p>
+    <a href="web/terminal">see web terminal</a><br />
+    <a href="https://dashboard.ngrok.com/tunnels/agents" target="_blank"
+      >see tunnels</a
+    >
+    <footer>
+      <p>Thank you <3</p>
+      <a href="" href="github.com/RamiresOliv" target="_blank"
+        >Github - RamiresOliv</a
+      >
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Terminal</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        color: rgb(184, 184, 184);
+        text-align: center;
+        background-color: rgb(32, 32, 32);
+      }
+      i {
+        color: rgba(0, 0, 0, 0.438);
+      }
+      a {
+        color: rgba(72, 130, 255, 0.26);
+      }
+      #type_log_yllw {
+        color: orange;
+      }
+      #type_log {
+        margin-left: 10px;
+        margin-top: 20px;
+        color: rgb(196, 196, 196);
+      }
+      #aa {
+        margin-top: 150px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #Logs {
+        border-radius: 10px;
+        text-align: left;
+        background-color: rgb(44, 44, 44);
+        height: 500px;
+        width: 800px;
+        overflow: auto;
+      }
+      #error {
+        color: red;
+      }
+      #em_baixo_dos_logs1 {
+        margin-top: 170px;
+        margin-right: 500px;
+        color: rgba(184, 184, 184, 0.26);
+      }
+      #em_baixo_dos_logs2 {
+        margin-top: 170px;
+        margin-right: 680px;
+      }
+    </style>
+    <script>
+      var last_log = "";
+      window.onload = () => {
+        var elem = document.getElementById("Logs");
+        setInterval(() => {
+          fetch("/listener/logs/get_all", {
+            method: "GET",
+          })
+            .then((result) => result.json())
+            .then((data) => {
+              setTimeout(() => {
+                if (data.success) {
+                  if (data.log != last_log) {
+                    last_log = data.log;
+                    const oo = data.log.split("\n");
+                    console.warn(oo.length);
+                    elem.innerHTML = "";
+                    elem.innerHTML += `<i id="type_log">Logs:</i><br><br>`;
+                    for (var i in oo) {
+                      if (!oo[i].includes("Unbundling libraries")) {
+                        if (oo[i].includes(":")) {
+                          var result = null;
+                          if (!oo[i].includes("<colorization")) {
+                            let things =
+                              oo[i].split("/")[0] +
+                              " " +
+                              oo[i].split("/")[1].split(":")[0] +
+                              ": ";
+                            let message = oo[i].split("/")[1].split(":")[1];
+                            result =
+                              "<colorization style='color: orange'>" +
+                              things +
+                              "</colorization>" +
+                              message;
+                          } else {
+                            result = oo[i];
+                          }
+                          elem.innerHTML += `<p id="type_log">${result}</p>`;
+                        } else {
+                          elem.innerHTML += `<i id="type_log">${oo[i]}</i><br>`;
+                        }
+                        if (oo[i].includes("Done")) {
+                          elem.innerHTML += `<p id="type_log"><colorization style="color: rgb(0, 120, 175);">[${
+                            oo[i].split("[")[1].split("]")[0]
+                          }] [Client result/WARN]:</colorization> Finished! total of, ${
+                            oo.length
+                          } logs line start. </p>`;
+                        }
+                      }
+                    }
+                    elem.scrollTop = elem.scrollHeight;
+                  }
+                } else {
+                  console.warn(data);
+                }
+              }, 1);
+            })
+            .catch((err) => console.warn(err));
+        }, 1);
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Web Terminal:</h1>
+    <div id="aa"><div id="Logs"></div></div>
+    <p id="em_baixo_dos_logs1">This terminal is running on a notebook!</p>
+    <a id="em_baixo_dos_logs2" href="../..">Back to main</a>
+
+    <footer>
+      <p>Thank you <3</p>
+      <a href="" href="github.com/RamiresOliv" target="_blank"
+        >Github - RamiresOliv</a
+      >
+    </footer>
+  </body>
+</html>
