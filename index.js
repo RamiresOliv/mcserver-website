@@ -5,7 +5,7 @@ const {NGROK_API_TOKEN} = require("./configs/tokens.json");
 const app = express();
 
 writeFileSync(
-  "./log.txt",
+  "./log.log",
   `<colorization id="error">[Website] [Server up/WARN]:</colorization> Server sender offline.`
 );
 
@@ -92,7 +92,7 @@ app.post("/listener/logs/put", (req, res) => {
       message: "no log member of body added..",
     });
   }
-  writeFileSync("./log.txt", req.body.log);
+  writeFileSync("./log.log", req.body.log);
   res.send({
     success: true,
     message: "thank",
@@ -100,7 +100,7 @@ app.post("/listener/logs/put", (req, res) => {
 });
 
 app.get("/listener/logs/get_all", (req, res) => {
-  const e = readFileSync("./log.txt", "utf8");
+  const e = readFileSync("./log.log", "utf8");
   res.send({
     success: true,
     log: e,
@@ -125,7 +125,7 @@ app.get("/listener/printer/get_public_url", async (req, res) => {
 
 app.post("/listener/logs/clear", (req, res) => {
   writeFileSync(
-    "./log.txt",
+    "./log.log",
     `<colorization id="error">[Website] [Server up/WARN]: Server sender offline</colorization>`
   );
   res.send({
@@ -136,7 +136,7 @@ app.post("/listener/logs/clear", (req, res) => {
 
 app.post("/listener/logs/ended", (req, res) => {
   appendFileSync(
-    "./log.txt",
+    "./log.log",
     "<colorization id='error'>Connection finished!</colorization>"
   );
   res.send({
