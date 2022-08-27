@@ -96,8 +96,14 @@
                   if (data.log != last_log) {
                     last_log = data.log;
                     const oo = data.log.split("\n");
-                    if (oo[0] && oo[0].includes("Unbundling libraries to")) {
-                      delete oo.shift();
+                    for (var i in oo) {
+                      if (
+                        oo[i].includes("Unbundling libraries to") ||
+                        oo[i].includes("Expected file") ||
+                        oo[i].includes("Unpacking")
+                      ) {
+                        delete oo.shift();
+                      }
                     }
                     console.warn({
                       length: oo.length + 1,
