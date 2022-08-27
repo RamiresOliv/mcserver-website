@@ -1,12 +1,12 @@
 const express = require("express");
-const {writeFileSync, readFileSync, appendFileSync} = require("fs");
+const { writeFileSync, readFileSync, appendFileSync } = require("fs");
 const axios = require("axios").default;
-const {NGROK_API_TOKEN} = require("./configs/tokens.json");
+const { NGROK_API_TOKEN } = require("./configs/tokens.json");
 const app = express();
 
 writeFileSync(
   "./log.log",
-  `<colorization id="error">[Website] [Server up/WARN]:</colorization> Server sender offline.`
+  `<colorization id="error">[Website] [Server up WARN]:</colorization> Server sender offline.`
 );
 
 app.disable("x-powered-by");
@@ -76,7 +76,7 @@ async function getDeployer() {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("adress: http://localhost:5000");
+  console.log("adress: http://localhost:3000");
   console.log("logs:");
 });
 
@@ -109,17 +109,33 @@ app.get("/listener/logs/get_all", (req, res) => {
   });
 });
 
+const regions = {
+  sa: "South America",
+  ca: "Central America",
+  na: "North America",
+};
+
 app.get("/listener/printer/get_public_url", async (req, res) => {
   await getDeployer();
   if (deployed == null) {
     res.send({
       success: false,
-      message: "'No found'",
+      public_url: "None",
+      region: "None",
     });
   } else {
+    let region = "Unknow";
+    if (regions[deployed.region]) {
+      region = regions[deployed.region];
+    } else {
+      region = deployed.region;
+    }
+    var date = new Date();
     res.send({
-      success: false,
-      message: deployed.public_url,
+      success: true,
+      public_url: deployed.public_url,
+      region: region,
+      alived_time: null,
     });
   }
 });
@@ -127,7 +143,7 @@ app.get("/listener/printer/get_public_url", async (req, res) => {
 app.post("/listener/logs/clear", (req, res) => {
   writeFileSync(
     "./log.log",
-    `<colorization id="error">[Website] [Server up/WARN]: Server sender offline</colorization>`
+    `<colorization id="error">[Website] [Server up WARN]: Server sender offline</colorization>`
   );
   res.send({
     success: true,
