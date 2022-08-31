@@ -1,20 +1,26 @@
 const express = require("express");
-const { writeFileSync, readFileSync, appendFileSync } = require("fs");
+const {writeFileSync, readFileSync, appendFileSync} = require("fs");
 const axios = require("axios").default;
-const { NGROK_API_TOKEN } = require("./configs/tokens.json");
 const app = express();
+
+/*
+.env file:
+  AllowedIPs = "<IPS> " # Exemple: "111.111.11.111, 222.222.22.222, 333.333.33.333, ..."
+  NgrokAPIKey = "<TOKEN>"
+*/
 
 writeFileSync(
   "./log.log",
   `<colorization id="error">[Website] [Server up WARN]:</colorization> Server sender offline.`
 );
 
+require("dotenv").config();
 app.disable("x-powered-by");
 app.set("trust proxy", true);
 app.use(express.json());
 app.use((req, res, next) => {
   var allowed = false;
-  const ips = require("./configs/allowed_ip.json");
+  const ips = process.env.AllowedIPs.replace(" ", "").split(",");
   for (var i in ips) {
     if (req.ip == ips[i]) {
       allowed = true;
@@ -27,11 +33,15 @@ app.use((req, res, next) => {
         color: rgb(184, 184, 184);
         text-align: center;
         background-color: rgb(32, 32, 32);
-      }</style> <h1>This access has been declined.</h1><p>for some reason this request has been declined :<</p><p>we sorry man!!</p>`);
+      }</style> <h1>This access has been declined.</h1><p>for some reason this request has been declined :<</p><p>we sorry man!!</p><p>${req.ip}</p>
+      
+      <script id="self_src">console.clear(); console.warn('Your connection request has been declined. Address: "${req.ip}"')
+      setTimeout(() => {document.getElementById("self_src").remove()}, 100)</script>`);
   } else {
     next();
   }
 });
+
 app.use(express.static("public"), (req, res, next) => {
   if (
     req.url.includes("/listener/logs/put") ||
@@ -48,11 +58,13 @@ app.use(express.static("public"), (req, res, next) => {
 
 var deployed = null;
 
+console.log(process.env.AllowedIPs.replace(" ", "").split(","));
+
 async function getDeployer() {
   await axios
     .get("https://api.ngrok.com/tunnels", {
       headers: {
-        Authorization: "Bearer " + NGROK_API_TOKEN,
+        Authorization: "Bearer " + process.env.NgrokAPIKey,
         ["Ngrok-Version"]: 2,
       },
     })
