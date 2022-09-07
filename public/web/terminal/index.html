@@ -75,12 +75,7 @@
           "DATA LOGS -----------------------------------------------------"
         );
       }, 300);
-      const colors = [
-        "color: green;",
-        "color: orange;",
-        "color: purple;",
-        "color: rgb(82, 0, 197);",
-      ];
+      const colors = ["color: green;", "color: orange;"];
       var settedColor = colors[Math.floor(Math.random() * 4)];
       var last_log = "";
       window.onload = () => {
@@ -143,7 +138,7 @@
                             ":" +
                             oo[i].split(":")[2] +
                             ":";
-                          let message = three + four + five + six;
+                          let message = three.join(":");
                           result =
                             `<colorization style='${settedColor}'>` +
                             things +
