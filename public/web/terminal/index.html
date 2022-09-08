@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="icon" type="image/x-icon" href="../../images/terminal_ico.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Server Terminal</title>
+    <title>Web MCServer - Terminal</title>
     <style>
       body {
         font-family: sans-serif;
@@ -117,6 +117,7 @@
         })
           .then((result) => result.json())
           .then((data) => {
+            console.log(data);
             popup(
               "normal",
               `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> ✌ Download ready.`
@@ -146,16 +147,6 @@
                     if (data.log != last_log) {
                       last_log = data.log;
                       const oo = data.log.split("\n");
-                      for (var i in oo) {
-                        if (
-                          oo[i].includes("Unbundling libraries to") ||
-                          oo[i].includes("Expected file") ||
-                          oo[i].includes("Unpacking")
-                        ) {
-                          delete oo.shift();
-                        }
-                      }
-                      full_log = oo;
                       console.warn({
                         length: oo.length,
                         data: oo,

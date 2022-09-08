@@ -9,10 +9,10 @@ const app = express();
   NgrokAPIKey = "<TOKEN>"
 */
 
-writeFileSync(
+/*writeFileSync(
   "./log.log",
   `<colorization id="error">[Website] [Server up WARN]:</colorization> Server sender offline.`
-);
+);*/
 
 require("dotenv").config();
 app.disable("x-powered-by");
@@ -102,7 +102,24 @@ app.post("/listener/logs/put", (req, res) => {
       message: "no log member of body added..",
     });
   }
-  writeFileSync("./log.log", req.body.log);
+
+  const oo = req.body.log.replace("\n", "&&@!_").split("_");
+  for (var i in oo) {
+    if (
+      oo[i].includes("Unbundling libraries to") ||
+      oo[i].includes("Expected file") ||
+      oo[i].includes("Unpacking")
+    ) {
+      delete oo.shift();
+    }
+  }
+
+  const filtred_logs = oo
+    .join("@!")
+    .replace("&&", "\n")
+    .replace("\r", "")
+    .replace("@!@!", "");
+  writeFileSync("./filtred_logs.log", filtred_logs);
   res.send({
     success: true,
     message: "thank",
@@ -110,7 +127,7 @@ app.post("/listener/logs/put", (req, res) => {
 });
 
 app.get("/listener/logs/get_all", (req, res) => {
-  const e = readFileSync("./log.log", "utf8");
+  const e = readFileSync("./filtred_logs.log", "utf8");
   res.send({
     success: true,
     log: e,
@@ -151,7 +168,7 @@ app.get("/listener/printer/get_public_url", async (req, res) => {
 
 app.post("/listener/logs/clear", (req, res) => {
   writeFileSync(
-    "./log.log",
+    "./filtred_logs.log",
     `<colorization id="error">[Website] [Server up WARN]: Server sender offline</colorization>`
   );
   res.send({
@@ -162,7 +179,7 @@ app.post("/listener/logs/clear", (req, res) => {
 
 app.post("/listener/logs/ended", (req, res) => {
   appendFileSync(
-    "./log.log",
+    "./filtred_logs.log",
     "<colorization id='error'>Connection finished!</colorization>"
   );
   res.send({
@@ -172,13 +189,8 @@ app.post("/listener/logs/ended", (req, res) => {
 });
 
 app.post("/client/for_do/make/file", (req, res) => {
-  if (!req.headers.data) {
-    return res.send("No body sended! Body required.");
-  }
-  writeFileSync(
-    "./public/util/logs/current_log.log",
-    JSON.parse(req.headers.data).join("\r")
-  );
+  const e = readFileSync("./filtred_logs.log", "utf8");
+  writeFileSync("./public/util/logs/current_log.log", e);
   res.send({
     success: true,
     message: "returned (created file)",
