@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Minecraft server: Closed.</title>
+    <title>Web MCServer - Home</title>
   </head>
   <style>
     body {
@@ -21,8 +21,12 @@
       padding: 40px 0;
     }
   </style>
+
+  <script src="modules/popups/Handler.js"></script>
   <script>
     window.onload = () => {
+      popup("normal", "Requesting data...");
+      firsttimedataloaddedpopuup = false;
       setTimeout(() => {
         console.clear();
         console.warn(
@@ -38,6 +42,10 @@
         })
           .then((result) => result.json())
           .then((data) => {
+            if (!firsttimedataloaddedpopuup) {
+              firsttimedataloaddedpopuup = true;
+              popup("success", "Data has been requested and loadded.");
+            }
             const state = document.getElementById("MC_Server_State");
             if (data.public_url == "None") {
               document.title = "Minecraft server: Closed.";
@@ -78,8 +86,15 @@
     <p id="MC_Server_Url" style="color: rgba(165, 165, 165, 0.733)">.</p>
     <p id="MC_Server_Region" style="color: rgba(165, 165, 165, 0.733)">.</p>
     <p id="MC_Server_State" style="color: rgba(165, 165, 165, 0.733)">.</p>
+
     <footer>
-      <p>Thank you <3</p>
+      <p>❤ Thank you</p>
+      <img
+        src="./images/puro1.gif"
+        alt="me.gif"
+        id="me_gif"
+        style="height: 30px; position: relative; top: 5px"
+      />
       <a href="https://github.com/RamiresOliv" target="_blank"
         >Github - RamiresOliv</a
       >

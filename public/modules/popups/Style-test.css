@@ -1,0 +1,70 @@
+#popup_text {
+  position: relative;
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-top: 15px;
+}
+@keyframes normal_in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes warn_in {
+  from {
+    opacity: 0;
+  }
+  to {
+    background-color: rgba(79, 58, 0, 0.541);
+    opacity: 1;
+  }
+}
+@keyframes error_in {
+  from {
+    opacity: 0;
+  }
+  to {
+    background-color: rgba(66, 0, 0, 0.541);
+    opacity: 1;
+  }
+}
+@keyframes out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.normal-popup {
+  opacity: 0;
+  width: auto;
+  height: 20px;
+  display: table;
+  text-align: center;
+  background-color: rgb(46, 46, 46);
+  border-radius: 10px;
+  margin: 0px auto 0px auto;
+}
+.warning-popup {
+  opacity: 0;
+  width: auto;
+  height: 20px;
+  display: table;
+  text-align: center;
+  background-color: rgb(46, 46, 46);
+  border-radius: 10px;
+  margin: 0px auto 0px auto;
+}
+.error-popup {
+  opacity: 0;
+  width: auto;
+  height: 20px;
+  display: table;
+  text-align: center;
+  background-color: rgb(46, 46, 46);
+  border-radius: 10px;
+  margin: 0px auto 0px auto;
+}

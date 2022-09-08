@@ -1,5 +1,5 @@
 const express = require("express");
-const {writeFileSync, readFileSync, appendFileSync} = require("fs");
+const { writeFileSync, readFileSync, appendFileSync } = require("fs");
 const axios = require("axios").default;
 const app = express();
 
@@ -34,9 +34,7 @@ app.use((req, res, next) => {
         text-align: center;
         background-color: rgb(32, 32, 32);
       }</style> <h1>This access has been declined.</h1><p>for some reason this request has been declined :<</p><p>we sorry man!!</p><p>${req.ip}</p>
-      
-      <script id="self_src">console.clear(); console.warn('Your connection request has been declined. Address: "${req.ip}"')
-      setTimeout(() => {document.getElementById("self_src").remove()}, 100)</script>`);
+      <script id="self_src">setTimeout(() => {console.clear(); console.warn('Your connection request has been declined. Address: "${req.ip}"'); setTimeout(() => {document.getElementById("self_src").remove()}, 3000)}, 300)</script>`);
   } else {
     next();
   }
@@ -48,6 +46,7 @@ app.use(express.static("public"), (req, res, next) => {
     req.url.includes("/listener/logs/get_all") ||
     req.url.includes("/listener/logs/clear") ||
     req.url.includes("/listener/logs/ended") ||
+    req.url.includes("/client/for_do/make/file") ||
     req.url.includes("/listener/printer/get_public_url")
   ) {
     next();
@@ -57,8 +56,6 @@ app.use(express.static("public"), (req, res, next) => {
 });
 
 var deployed = null;
-
-console.log(process.env.AllowedIPs.replace(" ", "").split(","));
 
 async function getDeployer() {
   await axios
@@ -171,5 +168,19 @@ app.post("/listener/logs/ended", (req, res) => {
   res.send({
     success: true,
     message: "returned (finished data)",
+  });
+});
+
+app.post("/client/for_do/make/file", (req, res) => {
+  if (!req.headers.data) {
+    return res.send("No body sended! Body required.");
+  }
+  writeFileSync(
+    "./public/util/logs/current_log.log",
+    JSON.parse(req.headers.data).join("\r")
+  );
+  res.send({
+    success: true,
+    message: "returned (created file)",
   });
 });

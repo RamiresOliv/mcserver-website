@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="icon" type="image/x-icon" href="../../images/terminal_ico.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Server Terminal</title>
     <style>
@@ -13,18 +14,32 @@
         background-color: rgb(32, 32, 32);
       }
       i {
-        color: rgba(0, 0, 0, 0.438);
+        color: rgb(135, 135, 135);
       }
       a {
         color: rgba(72, 130, 255, 0.26);
       }
       #type_log_yllw {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         color: orange;
       }
-      #type_log {
-        margin-left: 10px;
+      #type_log_unknown {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        position: relative;
+        left: 5px;
         margin-top: 10px;
-        color: rgb(196, 196, 196);
+      }
+      #type_log_client {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        position: relative;
+        left: 5px;
+        margin-top: 10px;
+      }
+      #type_log_server {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        position: relative;
+        left: 5px;
+        margin-top: 10px;
       }
       #aa {
         margin-top: 150px;
@@ -34,9 +49,10 @@
         justify-content: center;
       }
       #Logs::-webkit-scrollbar {
-        display: none; /* for Chrome, Safari, and Opera */
+        display: none; /* for Chrome, Safari, and Opera*/
       }
       #Logs {
+        overflow-x: hidden;
         overflow: hidden;
         border-radius: 10px;
         text-align: left;
@@ -62,7 +78,11 @@
         margin-right: 668px;
       }
     </style>
-    <script>
+    <script
+      type="text/javascript"
+      src="../../modules/popups/Handler.js"
+    ></script>
+    <script id="Main_Script">
       setTimeout(() => {
         console.clear();
         console.warn(
@@ -76,103 +96,149 @@
         );
       }, 300);
       const colors = ["color: green;", "color: orange;"];
-      var settedColor = colors[Math.floor(Math.random() * 4)];
+      var settedColor = colors[Math.floor(Math.random() * colors.length)];
       var last_log = "";
-      window.onload = () => {
-        var elem = document.getElementById("Logs");
-        setInterval(() => {
-          fetch("/listener/logs/get_all", {
-            method: "GET",
-          })
-            .then((result) => result.json())
-            .then((data) => {
-              setTimeout(() => {
-                if (data.success) {
-                  if (data.log != last_log) {
-                    last_log = data.log;
-                    const oo = data.log.split("\n");
-                    for (var i in oo) {
-                      if (
-                        oo[i].includes("Unbundling libraries to") ||
-                        oo[i].includes("Expected file") ||
-                        oo[i].includes("Unpacking")
-                      ) {
-                        delete oo.shift();
-                      }
-                    }
-                    console.warn({
-                      length: oo.length + 1,
-                      data: oo,
-                    });
-                    elem.innerHTML = "";
-                    elem.innerHTML += `<i id="type_log">Logs:</i><br><br>`;
-                    for (var i in oo) {
-                      if (oo[i].includes(":")) {
-                        var result = null;
-                        if (!oo[i].includes("<colorization")) {
-                          var two = "";
-                          var three = "";
-                          var four = "";
-                          var five = "";
-                          var six = "";
+      var download_logs_debundance = false;
+      var full_logs = [];
+      var loop_popup_success_firsttime = false;
 
-                          if (oo[i].split(":")[2]) {
-                            two = oo[i].split(":")[2];
-                          }
-                          if (oo[i].split(":")[3]) {
-                            three = oo[i].split(":")[3];
-                          }
-                          if (oo[i].split(":")[4]) {
-                            four = oo[i].split(":")[4];
-                          }
-                          if (oo[i].split(":")[5]) {
-                            five = oo[i].split(":")[5];
-                          }
-                          if (oo[i].split(":")[6]) {
-                            six = oo[i].split(":")[6];
-                          }
-                          let things =
-                            oo[i].split(":")[0] +
-                            ":" +
-                            oo[i].split(":")[1] +
-                            ":" +
-                            oo[i].split(":")[2] +
-                            ":";
-                          let message = three.join(":");
-                          result =
-                            `<colorization style='${settedColor}'>` +
-                            things +
-                            "</colorization>" +
-                            message;
-                        } else {
-                          result = oo[i];
-                        }
-                        elem.innerHTML += `<p number="${i}" id="type_log">${result}</p>`;
-                      } else {
-                        elem.innerHTML += `<i number="${i}" id="type_log">${oo[i]}</i><br>`;
-                      }
-                      if (oo[i].includes("Done")) {
-                        elem.innerHTML += `<p number="${i}" id="type_log"><colorization style="color: rgb(0, 120, 175);">[${
-                          oo[i].split("[")[1].split("]")[0]
-                        }] [Client result/WARN]:</colorization> Finished! total of, ${
-                          oo.length + 1
-                        } logs line start. </p>`;
-                      }
-                    }
-                    elem.scrollTop = elem.scrollHeight;
-                  }
-                } else {
-                  console.warn(data);
-                }
-              }, 1);
+      make_file_for_download = () => {
+        if (download_logs_debundance) {
+          return;
+        } else {
+          download_logs_debundance = true;
+        }
+        console.log(JSON.stringify(full_log));
+        fetch("/client/for_do/make/file", {
+          method: "POST",
+          headers: {
+            data: JSON.stringify(full_log),
+          },
+        })
+          .then((result) => result.json())
+          .then((data) => {
+            popup(
+              "normal",
+              `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> ✌ Download ready.`
+            );
+          });
+
+        setTimeout(() => (download_logs_debundance = false), 1000);
+      };
+      window.onload = () => {
+        setTimeout(() => {
+          var elem = document.getElementById("Logs");
+          const loop_interval = setInterval(() => {
+            fetch("/listener/logs/get_all", {
+              method: "GET",
             })
-            .catch((err) => console.warn(err));
-        }, 100);
+              .then((result) => result.json())
+              .then((data) => {
+                setTimeout(() => {
+                  if (data.success) {
+                    if (!loop_popup_success_firsttime) {
+                      loop_popup_success_firsttime = true;
+                      popup(
+                        "success",
+                        `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> Success in load data.`
+                      );
+                    }
+                    if (data.log != last_log) {
+                      last_log = data.log;
+                      const oo = data.log.split("\n");
+                      for (var i in oo) {
+                        if (
+                          oo[i].includes("Unbundling libraries to") ||
+                          oo[i].includes("Expected file") ||
+                          oo[i].includes("Unpacking")
+                        ) {
+                          delete oo.shift();
+                        }
+                      }
+                      full_log = oo;
+                      console.warn({
+                        length: oo.length,
+                        data: oo,
+                      });
+                      elem.innerHTML = "";
+                      elem.innerHTML += `<i id="type_log_unknown" style="top: 10px">Logs:</i><br><br>`;
+                      for (var i in oo) {
+                        if (oo[i].includes(":")) {
+                          var result = null;
+                          if (!oo[i].includes("<colorization")) {
+                            let things =
+                              oo[i].split(":")[0] +
+                              ":" +
+                              oo[i].split(":")[1] +
+                              ":" +
+                              oo[i].split(":")[2] +
+                              ":";
+                            let message = oo[i]
+                              .slice(":")
+                              .trim()
+                              .split(":")
+                              .splice(0)
+                              .splice(1)
+                              .splice(2)
+                              .join(":");
+                            result =
+                              `<colorization style='${settedColor}'>` +
+                              things +
+                              "</colorization>" +
+                              message;
+                          } else {
+                            result = oo[i];
+                          }
+                          elem.innerHTML += `<p number="${i}" id="type_log_server">${result}</p>`;
+                        } else {
+                          elem.innerHTML += `<i number="${i}" id="type_log_unknown">${oo[i]}</i><br>`;
+                        }
+                        if (oo[i].includes("Done")) {
+                          elem.innerHTML += `<p number="${i}" id="type_log_client"><colorization style="color: rgb(0, 120, 175);">[${
+                            oo[i].split("[")[1].split("]")[0]
+                          }] [Client result/WARN]:</colorization> <img src="../../images/poggers.png" style="height: 20px; position: relative; top: 5px" title="Poggers"> Finished! total of, ${
+                            oo.length
+                          } logs line start. </p>`;
+                        }
+                      }
+                      elem.scrollTop = elem.scrollHeight;
+                    }
+                  } else {
+                    clearInterval(loop_interval);
+                    loop_popup_success_firsttime = false;
+                    elem.innerHTML = `<h2 id="logs_fatal_error" style="position: relative; top:220px; text-align: center;">Fatal error: "success data = false"</h2>`;
+                    popup(
+                      "error",
+                      `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> For some reason the request data proccess has been brokenned... "success data = false"`
+                    );
+                    console.error(data);
+                  }
+                }, 1);
+              })
+              .catch((err) => {
+                clearInterval(loop_interval);
+                loop_popup_success_firsttime = false;
+                elem.innerHTML = `<h2 id="logs_fatal_error" style="position: relative; top:220px; text-align: center;">Fatal error: "fetch problem."?</h2>`;
+                popup(
+                  "error",
+                  `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> For some reason the request data proccess has been brokenned... "fetch problem."?`
+                );
+                console.error(err);
+              });
+          }, 100);
+        }, 400);
       };
     </script>
   </head>
   <body>
-    <h1>Web Terminal:</h1>
+    <h1 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">
+      <img
+        src="../../images/terminal_ico.png"
+        alt="web_ico.gif"
+        id="web_ico_gif"
+        style="height: 50px; position: relative; top: 13px; right: 10px"
+      />Web Terminal:
+    </h1>
     <div id="aa">
       <div id="Logs">
         <img
@@ -188,19 +254,41 @@
         />
       </div>
     </div>
-    <p id="em_baixo_dos_logs1">This terminal is running on a notebook!</p>
-    <a id="em_baixo_dos_logs2" href="../..">Back to main</a><br />
-    <!---
+
+    <p
+      id="em_baixo_dos_logs1"
+      style="position: relative; bottom: 30px; right: 76px"
+    >
+      Fun fact: This terminal is running on a notebook!
+    </p>
     <a
+      id="em_baixo_dos_logs2"
+      style="position: relative; bottom: 23px; right: 110px"
+      href="../.."
+      >Back to main</a
+    ><br />
+    <a
+      href="../../util/logs/current_log.log"
+      download="last.log"
+      onclick="make_file_for_download()"
       id="em_baixo_dos_logs3"
-      href="../../../log.log"
-      download="MCServer_last.log"
+      style="
+        position: relative;
+        bottom: 20px;
+        right: 110px;
+        cursor: pointer;
+        text-decoration: underline;
+      "
       >Download logs</a
     >
-    --->
-
     <footer>
-      <p>Thank you <3</p>
+      <p>❤ Thank you</p>
+      <img
+        src="../../images/puro1.gif"
+        alt="me.gif"
+        id="me_gif"
+        style="height: 30px; position: relative; top: 5px"
+      />
       <a href="https://github.com/RamiresOliv" target="_blank"
         >Github - RamiresOliv</a
       >
