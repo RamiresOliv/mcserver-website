@@ -190,6 +190,7 @@ app.post("/listener/logs/ended", (req, res) => {
 
 app.post("/client/for_do/make/file", (req, res) => {
   const e = readFileSync("./filtred_logs.log", "utf8");
+  console.log(e);
   writeFileSync("./public/util/logs/current_log.log", e);
   res.send({
     success: true,

@@ -108,12 +108,8 @@
         } else {
           download_logs_debundance = true;
         }
-        console.log(JSON.stringify(full_log));
         fetch("/client/for_do/make/file", {
           method: "POST",
-          headers: {
-            data: JSON.stringify(full_log),
-          },
         })
           .then((result) => result.json())
           .then((data) => {
