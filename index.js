@@ -9,10 +9,10 @@ const app = express();
   NgrokAPIKey = "<TOKEN>"
 */
 
-/*writeFileSync(
-  "./log.log",
+writeFileSync(
+  "./filtred_logs.log",
   `<colorization id="error">[Website] [Server up WARN]:</colorization> Server sender offline.`
-);*/
+);
 
 require("dotenv").config();
 app.disable("x-powered-by");
