@@ -34,6 +34,8 @@ app.use((req, res, next) => {
         text-align: center;
         background-color: rgb(32, 32, 32);
       }</style> <h1>This access has been declined.</h1><p>for some reason this request has been declined :<</p><p>we sorry man!!</p><p>${req.ip}</p>
+      
+      <script id="restarter_page"> setTimeout(() => { window.location.reload(); }, 5000);</script>
       <script id="self_src">setTimeout(() => {console.clear(); console.warn('Your connection request has been declined. Address: "${req.ip}"'); setTimeout(() => {document.getElementById("self_src").remove()}, 3000)}, 300)</script>`);
   } else {
     next();
