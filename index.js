@@ -14,11 +14,11 @@ writeFileSync(
   `<colorization id="error">[Website] [Server up WARN]:</colorization> Server sender offline.`
 );
 
-check_allowed_ip = () => {
+check_allowed_ip = (request_ip) => {
   var allowed = false;
   const ips = process.env.AllowedIPs.replace(" ", "").split(",");
   for (var i in ips) {
-    if (req.ip == ips[i]) {
+    if (request_ip == ips[i]) {
       allowed = true;
     }
   }
@@ -30,13 +30,7 @@ app.disable("x-powered-by");
 app.set("trust proxy", true);
 app.use(express.json());
 app.use((req, res, next) => {
-  var allowed = false;
-  const ips = process.env.AllowedIPs.replace(" ", "").split(",");
-  for (var i in ips) {
-    if (req.ip == ips[i]) {
-      allowed = true;
-    }
-  }
+  var allowed = check_allowed_ip(req.ip);
   if (!allowed) {
     console.warn("No allowed IP tryed access: " + req.ip);
     return res.status(405).send(`<style>body {
@@ -140,7 +134,7 @@ app.post("/listener/logs/put", (req, res) => {
 });
 
 app.get("/listener/logs/get_all", (req, res) => {
-  const check = check_allowed_ip();
+  const check = check_allowed_ip(req.ip);
   if (!check) {
     return res.redirect(req.url);
   } else {
