@@ -1,5 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
+  <script type="text/javascript" src="../../modules/popups/Handler.js"></script>
+  <script id="Main_Script">
+    setTimeout(() => {
+      console.clear();
+      console.warn(
+        `
+      Hello world!
+      Logs:
+      `
+      );
+      console.warn(
+        "DATA LOGS -----------------------------------------------------"
+      );
+    }, 300);
+    const colors = ["color: green;", "color: orange;"];
+    var settedColor = colors[Math.floor(Math.random() * colors.length)];
+    var last_log = "";
+    var download_logs_debundance = false;
+    var full_logs = [];
+    var loop_popup_success_firsttime = false;
+
+    make_file_for_download = () => {
+      if (download_logs_debundance) {
+        return;
+      } else {
+        download_logs_debundance = true;
+      }
+      fetch("/client/for_do/make/file", {
+        method: "POST",
+      })
+        .then((result) => result.json())
+        .then((data) => {
+          console.log(data);
+          popup(
+            "normal",
+            `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> ✌ Download ready.`
+          );
+        });
+
+      setTimeout(() => (download_logs_debundance = false), 1000);
+    };
+    window.onload = () => {
+      setTimeout(() => {
+        var elem = document.getElementById("Logs");
+        const loop_interval = setInterval(() => {
+          fetch("/listener/logs/get_all", {
+            method: "GET",
+          })
+            .then((result) => result.json())
+            .then((data) => {
+              setTimeout(() => {
+                if (data.success) {
+                  if (!loop_popup_success_firsttime) {
+                    loop_popup_success_firsttime = true;
+                    popup(
+                      "success",
+                      `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> Success in load data.`
+                    );
+                  }
+                  if (data.log != last_log) {
+                    last_log = data.log;
+                    const oo = data.log.split("\n");
+                    console.warn({
+                      length: oo.length,
+                      data: oo,
+                    });
+                    elem.innerHTML = "";
+                    elem.innerHTML += `<i id="type_log_unknown" style="top: 10px">Logs:</i><br><br>`;
+                    for (var i in oo) {
+                      if (oo[i].includes(":")) {
+                        var result = null;
+                        if (!oo[i].includes("<colorization")) {
+                          let things =
+                            oo[i].split(":")[0] +
+                            ":" +
+                            oo[i].split(":")[1] +
+                            ":" +
+                            oo[i].split(":")[2] +
+                            ":";
+                          let message = oo[i]
+                            .slice(":")
+                            .trim()
+                            .split(":")
+                            .splice(0)
+                            .splice(1)
+                            .splice(2)
+                            .join(":");
+                          result =
+                            `<colorization style='${settedColor}'>` +
+                            things +
+                            "</colorization>" +
+                            message;
+                        } else {
+                          result = oo[i];
+                        }
+                        elem.innerHTML += `<p number="${i}" id="type_log_server">${result}</p>`;
+                      } else {
+                        elem.innerHTML += `<i number="${i}" id="type_log_unknown">${oo[i]}</i><br>`;
+                      }
+                      if (oo[i].includes("Done")) {
+                        elem.innerHTML += `<p number="${i}" id="type_log_client"><colorization style="color: rgb(0, 120, 175);">[${
+                          oo[i].split("[")[1].split("]")[0]
+                        }] [Client result/WARN]:</colorization> <img src="../../images/poggers.png" style="height: 20px; position: relative; top: 5px" title="Poggers"> Finished! total of, ${
+                          oo.length
+                        } logs line start. </p>`;
+                      }
+                    }
+                    elem.scrollTop = elem.scrollHeight;
+                  }
+                } else {
+                  clearInterval(loop_interval);
+                  loop_popup_success_firsttime = false;
+                  elem.innerHTML = `<h2 id="logs_fatal_error" style="position: relative; top:220px; text-align: center;">Fatal error: "success data = false"</h2>`;
+                  popup(
+                    "error",
+                    `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> For some reason the request data proccess has been brokenned... "success data = false"`
+                  );
+                  console.error(data);
+                }
+              }, 1);
+            })
+            .catch((err) => {
+              clearInterval(loop_interval);
+              loop_popup_success_firsttime = false;
+              elem.innerHTML = `<h2 id="logs_fatal_error" style="position: relative; top:220px; text-align: center;">Fatal error: "fetch problem."?</h2>`;
+              popup(
+                "error",
+                `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> For some reason the request data proccess has been brokenned... "fetch problem."?`
+              );
+              console.error(err);
+            });
+        }, 100);
+      }, 400);
+    };
+  </script>
+  <script id="restarter_page">
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+  </script>
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -78,149 +218,6 @@
         margin-right: 668px;
       }
     </style>
-    <script
-      type="text/javascript"
-      src="../../modules/popups/Handler.js"
-    ></script>
-    <script id="Main_Script">
-      setTimeout(() => {
-        console.clear();
-        console.warn(
-          `
-        Hello world!
-        Logs:
-        `
-        );
-        console.warn(
-          "DATA LOGS -----------------------------------------------------"
-        );
-      }, 300);
-      const colors = ["color: green;", "color: orange;"];
-      var settedColor = colors[Math.floor(Math.random() * colors.length)];
-      var last_log = "";
-      var download_logs_debundance = false;
-      var full_logs = [];
-      var loop_popup_success_firsttime = false;
-
-      make_file_for_download = () => {
-        if (download_logs_debundance) {
-          return;
-        } else {
-          download_logs_debundance = true;
-        }
-        fetch("/client/for_do/make/file", {
-          method: "POST",
-        })
-          .then((result) => result.json())
-          .then((data) => {
-            console.log(data);
-            popup(
-              "normal",
-              `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> ✌ Download ready.`
-            );
-          });
-
-        setTimeout(() => (download_logs_debundance = false), 1000);
-      };
-      window.onload = () => {
-        setTimeout(() => {
-          var elem = document.getElementById("Logs");
-          const loop_interval = setInterval(() => {
-            fetch("/listener/logs/get_all", {
-              method: "GET",
-            })
-              .then((result) => result.json())
-              .then((data) => {
-                setTimeout(() => {
-                  if (data.success) {
-                    if (!loop_popup_success_firsttime) {
-                      loop_popup_success_firsttime = true;
-                      popup(
-                        "success",
-                        `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> Success in load data.`
-                      );
-                    }
-                    if (data.log != last_log) {
-                      last_log = data.log;
-                      const oo = data.log.split("\n");
-                      console.warn({
-                        length: oo.length,
-                        data: oo,
-                      });
-                      elem.innerHTML = "";
-                      elem.innerHTML += `<i id="type_log_unknown" style="top: 10px">Logs:</i><br><br>`;
-                      for (var i in oo) {
-                        if (oo[i].includes(":")) {
-                          var result = null;
-                          if (!oo[i].includes("<colorization")) {
-                            let things =
-                              oo[i].split(":")[0] +
-                              ":" +
-                              oo[i].split(":")[1] +
-                              ":" +
-                              oo[i].split(":")[2] +
-                              ":";
-                            let message = oo[i]
-                              .slice(":")
-                              .trim()
-                              .split(":")
-                              .splice(0)
-                              .splice(1)
-                              .splice(2)
-                              .join(":");
-                            result =
-                              `<colorization style='${settedColor}'>` +
-                              things +
-                              "</colorization>" +
-                              message;
-                          } else {
-                            result = oo[i];
-                          }
-                          elem.innerHTML += `<p number="${i}" id="type_log_server">${result}</p>`;
-                        } else {
-                          elem.innerHTML += `<i number="${i}" id="type_log_unknown">${oo[i]}</i><br>`;
-                        }
-                        if (oo[i].includes("Done")) {
-                          elem.innerHTML += `<p number="${i}" id="type_log_client"><colorization style="color: rgb(0, 120, 175);">[${
-                            oo[i].split("[")[1].split("]")[0]
-                          }] [Client result/WARN]:</colorization> <img src="../../images/poggers.png" style="height: 20px; position: relative; top: 5px" title="Poggers"> Finished! total of, ${
-                            oo.length
-                          } logs line start. </p>`;
-                        }
-                      }
-                      elem.scrollTop = elem.scrollHeight;
-                    }
-                  } else {
-                    clearInterval(loop_interval);
-                    loop_popup_success_firsttime = false;
-                    elem.innerHTML = `<h2 id="logs_fatal_error" style="position: relative; top:220px; text-align: center;">Fatal error: "success data = false"</h2>`;
-                    popup(
-                      "error",
-                      `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> For some reason the request data proccess has been brokenned... "success data = false"`
-                    );
-                    console.error(data);
-                  }
-                }, 1);
-              })
-              .catch((err) => {
-                clearInterval(loop_interval);
-                loop_popup_success_firsttime = false;
-                elem.innerHTML = `<h2 id="logs_fatal_error" style="position: relative; top:220px; text-align: center;">Fatal error: "fetch problem."?</h2>`;
-                popup(
-                  "error",
-                  `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> For some reason the request data proccess has been brokenned... "fetch problem."?`
-                );
-                console.error(err);
-              });
-          }, 100);
-        }, 400);
-      };
-    </script>
-    <script id="restarter_page">
-      setTimeout(() => {
-        window.location.reload();
-      }, 5000);
-    </script>
   </head>
   <body>
     <h1 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">

@@ -1,27 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Web MCServer - Home</title>
-  </head>
-  <style>
-    body {
-      font-family: sans-serif;
-      color: rgb(184, 184, 184);
-      text-align: center;
-      background-color: rgb(32, 32, 32);
-    }
-    a {
-      color: rgba(72, 130, 255, 0.26);
-    }
-    footer {
-      margin-top: 490px;
-      padding: 40px 0;
-    }
-  </style>
-
   <script src="modules/popups/Handler.js"></script>
   <script>
     window.onload = () => {
@@ -77,6 +55,32 @@
       }, 5000);
     };
   </script>
+  <script id="restarter_page">
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+  </script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web MCServer - Home</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        color: rgb(184, 184, 184);
+        text-align: center;
+        background-color: rgb(32, 32, 32);
+      }
+      a {
+        color: rgba(72, 130, 255, 0.26);
+      }
+      footer {
+        margin-top: 490px;
+        padding: 40px 0;
+      }
+    </style>
+  </head>
   <body>
     <h1>Minecraft server :D</h1>
     <a href="web/terminal">see web terminal</a><br />
