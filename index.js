@@ -14,6 +14,17 @@ writeFileSync(
   `<colorization id="error">[Website] [Server up WARN]:</colorization> Server sender offline.`
 );
 
+check_allowed_ip = () => {
+  var allowed = false;
+  const ips = process.env.AllowedIPs.replace(" ", "").split(",");
+  for (var i in ips) {
+    if (req.ip == ips[i]) {
+      allowed = true;
+    }
+  }
+  return allowed;
+};
+
 require("dotenv").config();
 app.disable("x-powered-by");
 app.set("trust proxy", true);
@@ -129,12 +140,17 @@ app.post("/listener/logs/put", (req, res) => {
 });
 
 app.get("/listener/logs/get_all", (req, res) => {
-  const e = readFileSync("./filtred_logs.log", "utf8");
-  res.send({
-    success: true,
-    log: e,
-    message: "returned",
-  });
+  const check = check_allowed_ip();
+  if (!check) {
+    return res.redirect(req.url);
+  } else {
+    const e = readFileSync("./filtred_logs.log", "utf8");
+    res.send({
+      success: true,
+      log: e,
+      message: "returned",
+    });
+  }
 });
 
 const regions = {
