@@ -41,6 +41,7 @@
 
       setTimeout(() => (download_logs_debundance = false), 1000);
     };
+    let falamdsquantolog = false;
     window.onload = () => {
       setTimeout(() => {
         var elem = document.getElementById("Logs");
@@ -66,6 +67,10 @@
                       length: oo.length,
                       data: oo,
                     });
+                    if (oo.length > 299 && !falamdsquantolog) {
+                      falamdsquantolog = true;
+                      console.log("FALA MEU DEUS QUANTO LOG +300???!");
+                    }
                     elem.innerHTML = "";
                     elem.innerHTML += `<i id="type_log_unknown" style="top: 10px">Logs:</i><br><br>`;
                     for (var i in oo) {
