@@ -110,7 +110,7 @@ app.post("/listener/logs/put", (req, res) => {
     });
   }
 
-  const oo = req.body.log.replace("\n", "&&@!_").split("_");
+  const oo = req.body.log.replace("\n", "&¨&@!_##@**").split("_##@**");
   for (var i in oo) {
     if (
       oo[i].includes("Unbundling libraries to") ||
@@ -122,10 +122,12 @@ app.post("/listener/logs/put", (req, res) => {
   }
 
   const filtred_logs = oo
-    .join("@!")
-    .replace("&&", "\n")
+    .join("&@!")
+    .replace("&¨", "\n")
     .replace("\r", "")
-    .replace("@!@!", "");
+    .replace("&¨&¨", "");
+
+  writeFileSync("./public/utils/logs/current_log.log", filtred_logs);
   writeFileSync("./filtred_logs.log", filtred_logs);
   res.send({
     success: true,
@@ -197,15 +199,5 @@ app.post("/listener/logs/ended", (req, res) => {
   res.send({
     success: true,
     message: "returned (finished data)",
-  });
-});
-
-app.post("/client/for_do/make/file", (req, res) => {
-  const e = readFileSync("./filtred_logs.log", "utf8");
-  console.log(e);
-  writeFileSync("./public/util/logs/current_log.log", e);
-  res.send({
-    success: true,
-    message: "returned (created file)",
   });
 });
