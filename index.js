@@ -117,7 +117,7 @@ app.post("/listener/logs/put", (req, res) => {
       oo[i].includes("Expected file") ||
       oo[i].includes("Unpacking")
     ) {
-      delete oo.shift();
+      oo.splice(oo[i], 1);
     }
   }
 
