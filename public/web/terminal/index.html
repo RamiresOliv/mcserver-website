@@ -17,30 +17,9 @@
     const colors = ["color: green;", "color: orange;"];
     var settedColor = colors[Math.floor(Math.random() * colors.length)];
     var last_log = "";
-    var download_logs_debundance = false;
     var full_logs = [];
     var loop_popup_success_firsttime = false;
 
-    make_file_for_download = () => {
-      if (download_logs_debundance) {
-        return;
-      } else {
-        download_logs_debundance = true;
-      }
-      fetch("/client/for_do/make/file", {
-        method: "POST",
-      })
-        .then((result) => result.json())
-        .then((data) => {
-          console.log(data);
-          popup(
-            "normal",
-            `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> ✌ Download ready.`
-          );
-        });
-
-      setTimeout(() => (download_logs_debundance = false), 1000);
-    };
     let falamdsquantolog = false;
     window.onload = () => {
       setTimeout(() => {
@@ -257,6 +236,7 @@
       >Back to main</a
     ><br />
     <a
+      onclick='popup( "normal", `<img src="../../images/pode_crer.jpg" style="height: 20px; position: relative; top: 5px" title="Pd cre"> ✌ Download ready.`)'
       href="../../utils/logs/current_log.log"
       download="last.log"
       id="em_baixo_dos_logs3"
