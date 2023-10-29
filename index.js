@@ -1,4 +1,6 @@
 const express = require("express");
+const ips = require("./configs/allowed_ip.json");
+const { NGROK_API_TOKEN } = require("./configs/tokens.json");
 const { writeFileSync, readFileSync, appendFileSync } = require("fs");
 const axios = require("axios").default;
 const app = express();
@@ -16,7 +18,6 @@ writeFileSync(
 
 check_allowed_ip = (request_ip) => {
   var allowed = false;
-  const ips = process.env.AllowedIPs.replace(" ", "").split(",");
   for (var i in ips) {
     if (request_ip == ips[i]) {
       allowed = true;
@@ -68,7 +69,7 @@ async function getDeployer() {
   await axios
     .get("https://api.ngrok.com/tunnels", {
       headers: {
-        Authorization: "Bearer " + process.env.NgrokAPIKey,
+        Authorization: "Bearer " + NGROK_API_TOKEN,
         ["Ngrok-Version"]: 2,
       },
     })
